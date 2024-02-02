@@ -1,47 +1,48 @@
-const missions = require ('./missionControler')
+const missionsController = require('./missionController')
 
 
 
-async function creatNewMission(data){
-    // if (missions.readOne(data)){
-    //  console.log("errrorrr");
-    //  throw("err")
-    // }else{
-        console.log("service level: ", data);
-     return await  (missions.createMission(data) )
-    // }
- }
-async function getAllMissions(){
-    let res = await missions.readAllMissions({isActive:true})
-    console.log("the result in services is: ", res);
+async function creatNewMission(data) {
+
+    try {
+
+        const res = await missionsController.create(data)
+    } catch (error) {
+        console.log(error);
+    }
+
+
+
+}
+async function getAllMissions() {
+    let res = await missionsController.readAll({ isActive: true })
+
     return res
 }
-async function toDeleteMission(missionId){
- return await missions.deleteMission(missionId,{isActive:false})
+async function deleteMission(missionId) {
+    return await missionsController.deleteById(missionId, { isActive: false })
 }
-async function toUpdateMissionIsDone(missionId){
-    return await missions.doneMission(missionId,{isDone:false})
-   }
-async function  toUpdateAllMissionIsDone(){
-    return await missions.doneAllMissions()
-   }
+async function updateMissionStatus(missionId) {
+    const missionToUpdate = await missionsController.read(missionId)
+    console.log(missionToUpdate);
+    if (!missionToUpdate.isDone) {
+        await missionsController.update(missionId, { isDone: true })
+    } else {
+
+        await missionsController.update(missionId, { isDone: false })
+    }
+}
 
 
-  
-
-// async function activeItems(){
-//     let res = await items.updateActiveAll()
-//     return res
-// }
-// async function getOneItem(itemId){
-//     return await items.readOne({_id:itemId})
-// }
-// async function getItemByName(letter){
-//     let letterToSearch = new RegExp('^' + letter, 'i')
-//     return await items.filterByLetter({name: letterToSearch })    
-// }
+async function toUpdateAllMissionIsDone() {
+    return await missionsController.doneAllMissions()
+}
 
 
 
 
-module.exports ={toUpdateAllMissionIsDone, getAllMissions,toUpdateMissionIsDone,creatNewMission,toDeleteMission}
+
+
+
+
+module.exports = { toUpdateAllMissionIsDone, getAllMissions, updateMissionStatus, creatNewMission, deleteMission }
